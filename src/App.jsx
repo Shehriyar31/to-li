@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Form, Button, ListGroup, Dropdown, Navbar, Nav } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, ListGroup, Dropdown, Navbar, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { toast, ToastContainer } from 'react-toastify'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -13,7 +13,6 @@ function App() {
   const [currentTheme, setCurrentTheme] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  // Preloader effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false)
@@ -128,20 +127,35 @@ function App() {
             <Nav className="ms-auto">
               <div className="navbar-stats-wrapper d-flex align-items-center flex-column flex-lg-row">
                 <div className="navbar-stats me-lg-3 mb-2 mb-lg-0">
-                  <span className="stats-item me-2">
-                    <i className="bi bi-check-circle me-1"></i>
-                    {todos.filter(todo => todo.completed).length} Completed
-                  </span>
-                  <span className="stats-item">
-                    <i className="bi bi-list-task me-1"></i>
-                    {todos.length} Total
-                  </span>
+                  <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>Number of completed tasks</Tooltip>}
+                  >
+                    <span className="stats-item me-2">
+                      <i className="bi bi-check-circle me-1"></i>
+                      {todos.filter(todo => todo.completed).length} Completed
+                    </span>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>Total number of tasks</Tooltip>}
+                  >
+                    <span className="stats-item">
+                      <i className="bi bi-list-task me-1"></i>
+                      {todos.length} Total
+                    </span>
+                  </OverlayTrigger>
                 </div>
                 <Dropdown>
-                  <Dropdown.Toggle className="theme-toggle-navbar">
-                    <i className={`bi bi-${colorThemes[currentTheme].icon} me-2`}></i>
-                    Themes
-                  </Dropdown.Toggle>
+                  <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>Change app theme</Tooltip>}
+                  >
+                    <Dropdown.Toggle className="theme-toggle-navbar">
+                      <i className={`bi bi-${colorThemes[currentTheme].icon} me-2`}></i>
+                      Themes
+                    </Dropdown.Toggle>
+                  </OverlayTrigger>
                   <Dropdown.Menu className="theme-menu">
                     {colorThemes.map((theme, index) => (
                       <Dropdown.Item
@@ -218,24 +232,32 @@ function App() {
                   <Form.Group className="input-group-custom">
                     <div className="input-wrapper">
                       <i className="bi bi-plus-circle input-icon"></i>
-                      <Form.Control
-                        className="todo-input"
-                        type="text"
-                        placeholder="What needs to be done today?"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTodo())}
-
-                      />
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip>Type your task and press Enter or click Add Task</Tooltip>}
+                      >
+                        <Form.Control
+                          className="todo-input"
+                          type="text"
+                          placeholder="What needs to be done today?"
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTodo())}
+                        />
+                      </OverlayTrigger>
                     </div>
-                    <Button 
-                      onClick={addTodo} 
-                      className="add-btn"
-
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip>Add new task to your list</Tooltip>}
                     >
-                      <i className="bi bi-plus-lg me-2"></i>
-                      Add Task
-                    </Button>
+                      <Button 
+                        onClick={addTodo} 
+                        className="add-btn"
+                      >
+                        <i className="bi bi-plus-lg me-2"></i>
+                        Add Task
+                      </Button>
+                    </OverlayTrigger>
                   </Form.Group>
                 </Form>
               </div>
@@ -258,12 +280,17 @@ function App() {
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="todo-content">
-                        <Form.Check
-                          type="checkbox"
-                          checked={todo.completed}
-                          onChange={() => toggleTodo(todo.id)}
-                          className="todo-checkbox me-3"
-                        />
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip>{todo.completed ? "Mark as incomplete" : "Mark as complete"}</Tooltip>}
+                        >
+                          <Form.Check
+                            type="checkbox"
+                            checked={todo.completed}
+                            onChange={() => toggleTodo(todo.id)}
+                            className="todo-checkbox me-3"
+                          />
+                        </OverlayTrigger>
                         <div className="todo-number">
                           #{index + 1}
                         </div>
@@ -272,15 +299,19 @@ function App() {
                         </div>
                       </div>
                       <div className="todo-actions">
-                        <Button 
-                          variant="outline-danger" 
-                          size="sm" 
-                          className="delete-btn-modern"
-                          onClick={() => deleteTodo(todo.id)}
-                          title="Delete task"
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip>Delete task</Tooltip>}
                         >
-                          <i className="bi bi-trash3"></i>
-                        </Button>
+                          <Button 
+                            variant="outline-danger" 
+                            size="sm" 
+                            className="delete-btn-modern"
+                            onClick={() => deleteTodo(todo.id)}
+                          >
+                            <i className="bi bi-trash3"></i>
+                          </Button>
+                        </OverlayTrigger>
                       </div>
                     </div>
                   ))}
